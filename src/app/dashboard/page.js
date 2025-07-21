@@ -10,6 +10,8 @@ export default function DashboardPage() {
   const [user, setUser] = useState(null)
   const [moodHistory, setMoodHistory] = useState([])
   const [showReminder, setShowReminder] = useState(false)
+  const [streak, setStreak] = useState(null)
+  const [streakLoading, setStreakLoading] = useState(true)
   const router = useRouter()
 
   const streakRef = useRef(null)
@@ -26,6 +28,7 @@ export default function DashboardPage() {
         setUser(data.user)
         await insertOrUpdateUser()
         await fetchMoodHistory(data.user.id)
+        await fetchStreak(data.user.id)
       } else {
         router.push('/login')
       }
@@ -55,6 +58,24 @@ export default function DashboardPage() {
         );
       });
       setShowReminder(!hasCheckedInToday);
+    }
+  }
+
+  const fetchStreak = async (userId) => {
+    setStreakLoading(true)
+    try {
+      const res = await fetch('/api/streak', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId }),
+      })
+      const result = await res.json()
+      if (result.success) setStreak(result.streak)
+      else setStreak(0)
+    } catch {
+      setStreak(0)
+    } finally {
+      setStreakLoading(false)
     }
   }
 
@@ -129,7 +150,9 @@ export default function DashboardPage() {
           className={`w-full max-w-xl bg-white/80 dark:bg-slate-900/80 rounded-2xl shadow-xl p-7 mb-8 flex items-center justify-center gap-4 border border-slate-100 dark:border-slate-800 transition-all duration-700 animate-fade-in-up ${streakVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
           <Flame className="w-7 h-7 text-orange-500 animate-pulse" />
-          <span className="text-slate-700 dark:text-white text-lg md:text-xl font-medium">Your current streak: <strong>3 days</strong> 🔥 Keep glowing!</span>
+          <span className="text-slate-700 dark:text-white text-lg md:text-xl font-medium">
+            Your current mood streak: <strong>{streakLoading ? '...' : `${streak} day${streak === 1 ? '' : 's'}`}</strong> 🔥 Keep glowing!
+          </span>
         </div>
 
         {/* Divider */}
@@ -140,7 +163,7 @@ export default function DashboardPage() {
           ref={historyRef}
           className={`w-full max-w-2xl mb-16 bg-white/90 dark:bg-slate-900/80 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 transition-all duration-700 animate-fade-in-up ${historyVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
-          <h2 className="text-2xl font-bold text-slate-700 dark:text-white mb-4">Recent Mood Check-ins</h2>
+          <h2 className="text-2xl font-bold text-slate-700 dark:text-white mb-4">Mood Check-ins</h2>
           {moodHistory.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-300">No check-ins yet.</p>
           ) : (
@@ -183,6 +206,7 @@ export default function DashboardPage() {
             title="Wellness Tips"
             description="Explore healthy suggestions to support your mood."
             buttonText="View Tips"
+            onClick={() => router.push('/view-tips')}
           />
         </div>
       </main>
@@ -247,7 +271,7 @@ function Navbar({ fullName }) {
         <NavLink href="/dashboard" label="Dashboard" icon={<Smile className="w-5 h-5" />} />
         <NavLink href="#" label="Journal" icon={<BookOpen className="w-5 h-5" />} />
         <NavLink href="/mood-checkin" label="Mood" icon={<Flame className="w-5 h-5" />} />
-        <NavLink href="#" label="Tips" icon={<Sparkles className="w-5 h-5" />} />
+        <NavLink href="/view-tips" label="Tips" icon={<Sparkles className="w-5 h-5" />} />
         <div className="relative">
           <button
             className="flex items-center gap-2 rounded-full bg-gradient-to-tr from-[#a7f3d0] via-[#c7d2fe] to-[#fbcfe8] px-3 py-1 shadow hover:scale-105 transition focus:outline-none"
@@ -319,16 +343,16 @@ function getTimeBasedGreeting() {
 }
 
 function getMoodEmoji(mood) {
-    switch ((mood || '').toLowerCase().trim()) {
-      case 'happy': return '😊'
-      case 'sad': return '😢'
-      case 'anxious': return '😰'
-      case 'angry': return '😡'
-      case 'calm': return '😌'
-      case 'neutral': return '😐'
-      default: return '🤔'
-    }
+  switch ((mood || '').toLowerCase().trim()) {
+    case 'happy': return '😊'
+    case 'sad': return '😢'
+    case 'anxious': return '😰'
+    case 'angry': return '😡'
+    case 'calm': return '😌'
+    case 'neutral': return '😐'
+    default: return '🤔'
   }
+}
 function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
