@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 import { insertOrUpdateUser } from '../../lib/handleUserLogin'
-import { Flower2, Smile, BookOpen, Sparkles, Flame, User, LogOut, Bell } from 'lucide-react'
+import { Flower2, Smile, BookOpen, Sparkles, Flame, User, LogOut, Bell, BarChart3, LineChart  } from 'lucide-react'
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
@@ -200,6 +200,7 @@ export default function DashboardPage() {
             title="Daily Journal"
             description="Write freely and reflect to gain clarity and peace."
             buttonText="Write Journal"
+            onClick={() => router.push('/journal')}
           />
           <FeatureCard
             icon={<Sparkles className="w-10 h-10 text-[#34d399] mx-auto" />}
@@ -269,9 +270,10 @@ function Navbar({ fullName }) {
       </div>
       <div className="flex items-center gap-6">
         <NavLink href="/dashboard" label="Dashboard" icon={<Smile className="w-5 h-5" />} />
-        <NavLink href="#" label="Journal" icon={<BookOpen className="w-5 h-5" />} />
+        <NavLink href="/journal" label="Journal" icon={<BookOpen className="w-5 h-5" />} />
         <NavLink href="/mood-checkin" label="Mood" icon={<Flame className="w-5 h-5" />} />
         <NavLink href="/view-tips" label="Tips" icon={<Sparkles className="w-5 h-5" />} />
+        <NavLink href="/moodAnalytics" label="Mood Analytics" icon={<LineChart className="w-5 h-5" />} />
         <div className="relative">
           <button
             className="flex items-center gap-2 rounded-full bg-gradient-to-tr from-[#a7f3d0] via-[#c7d2fe] to-[#fbcfe8] px-3 py-1 shadow hover:scale-105 transition focus:outline-none"
