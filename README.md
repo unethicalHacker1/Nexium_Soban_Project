@@ -8,7 +8,7 @@ A full-stack AI-powered web application to help users track their mental health 
 
 - 🔐 **Magic Link Authentication** with Supabase
 - ✍️ **Mood Check-in System** with emoji-based moods and optional notes
-- 🤖 **AI Suggestions** powered by [n8n](https://n8n.io/)
+- 🤖 **AI Suggestions**
 - 📊 **Mood History Dashboard** showing recent entries
 - 🗃️ **Supabase** for user auth and mood data
 - 🧠 **MongoDB** for journal and AI response storage
